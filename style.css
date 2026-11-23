@@ -1,0 +1,743 @@
+/* =========================================================
+   신비로운 심야 타로 리딩 — style.css
+   ========================================================= */
+
+:root {
+  --navy-900: #07061a;
+  --navy-800: #0b0a24;
+  --navy-700: #14123a;
+  --purple-700: #2a1652;
+  --purple-500: #5b3a9e;
+  --purple-300: #a98bea;
+  --gold: #d9b46a;
+  --gold-light: #f3dfa6;
+  --gold-deep: #9c7a36;
+  --text: #ece6ff;
+  --text-dim: #b4abd6;
+  --card-w: clamp(92px, 26vw, 190px);   /* 결과 카드 */
+  --fan-w: 78px;                         /* 부채꼴 카드 */
+  --slot-w: clamp(64px, 18vw, 96px);     /* 하단 슬롯 */
+  --radius: 14px;
+  --font-title: "Cinzel", "Noto Serif KR", serif;
+  --font-body: "Noto Serif KR", "Apple SD Gothic Neo", "Malgun Gothic", serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-text-size-adjust: 100%; }
+[hidden] { display: none !important; }
+
+body {
+  min-height: 100vh;
+  min-height: 100dvh;
+  font-family: var(--font-body);
+  color: var(--text);
+  background: var(--navy-900);
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+button { font: inherit; color: inherit; cursor: pointer; border: 0; background: none; }
+
+/* ---------- 밤하늘 ---------- */
+.sky {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at 20% 0%, rgba(91, 58, 158, 0.45), transparent 55%),
+    radial-gradient(ellipse at 90% 30%, rgba(42, 22, 82, 0.7), transparent 60%),
+    radial-gradient(ellipse at 50% 110%, rgba(91, 58, 158, 0.35), transparent 55%),
+    linear-gradient(180deg, var(--navy-800) 0%, #120d33 50%, var(--navy-900) 100%);
+}
+
+.moon-glow {
+  position: absolute;
+  top: -120px;
+  left: -80px;
+  width: 360px;
+  height: 360px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(243, 223, 166, 0.2), transparent 65%);
+}
+
+.stars { position: absolute; inset: 0; }
+
+.star {
+  position: absolute;
+  border-radius: 50%;
+  background: #fff;
+  animation: twinkle var(--dur, 4s) ease-in-out infinite;
+  animation-delay: var(--delay, 0s);
+}
+.star.gold { background: var(--gold-light); box-shadow: 0 0 6px var(--gold-light); }
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.15; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.15); }
+}
+
+/* ---------- 상단 바 ---------- */
+.topbar {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.icon-btn {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  color: var(--gold-light);
+  background: rgba(20, 18, 58, 0.75);
+  border: 1px solid rgba(217, 180, 106, 0.55);
+  transition: transform 0.4s, background 0.25s;
+}
+.icon-btn:hover { background: rgba(91, 58, 158, 0.5); }
+#btn-settings:hover { transform: rotate(60deg); }
+
+.mode-chip {
+  font-size: 0.72rem;
+  padding: 3px 10px;
+  border-radius: 999px;
+  color: var(--text-dim);
+  background: rgba(20, 18, 58, 0.75);
+  border: 1px solid rgba(169, 139, 234, 0.35);
+  white-space: nowrap;
+}
+.mode-chip.live { color: #9fe3c4; border-color: rgba(159, 227, 196, 0.5); }
+.mode-chip.small { font-size: 0.7rem; }
+
+/* ---------- 레이아웃 ---------- */
+.app {
+  width: min(1100px, 100%);
+  margin: 0 auto;
+  padding: 56px 16px 40px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.site-header { text-align: center; margin-bottom: 26px; }
+
+.eyebrow {
+  font-family: var(--font-title);
+  letter-spacing: 0.35em;
+  font-size: 0.78rem;
+  color: var(--gold);
+}
+
+.title {
+  margin-top: 6px;
+  font-size: clamp(1.6rem, 5vw, 2.6rem);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  background: linear-gradient(180deg, var(--gold-light), var(--gold) 60%, var(--gold-deep));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.site-footer {
+  margin-top: auto;
+  padding-top: 40px;
+  text-align: center;
+  font-size: 0.82rem;
+  color: var(--text-dim);
+}
+
+.screen { display: none; }
+.screen.is-active { display: block; animation: fadeUp 0.7s ease both; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: none; }
+}
+
+.screen-head { text-align: center; margin-bottom: 20px; }
+
+.concern-echo {
+  max-width: 640px;
+  margin: 10px auto 0;
+  font-style: italic;
+}
+
+/* ---------- 패널 ---------- */
+.panel,
+.modal-inner,
+.reading {
+  position: relative;
+  border-radius: 22px;
+  background: linear-gradient(160deg, rgba(42, 22, 82, 0.6), rgba(11, 10, 36, 0.82));
+  border: 1px solid rgba(217, 180, 106, 0.55);
+  box-shadow: 0 0 0 6px rgba(217, 180, 106, 0.06), 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.panel {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: clamp(24px, 5vw, 44px);
+  text-align: center;
+  backdrop-filter: blur(6px);
+}
+
+.panel::before,
+.panel::after {
+  content: "✦";
+  position: absolute;
+  top: 12px;
+  color: var(--gold);
+  font-size: 0.9rem;
+}
+.panel::before { left: 16px; }
+.panel::after { right: 16px; }
+
+.panel-title {
+  font-size: clamp(1.15rem, 3.6vw, 1.5rem);
+  font-weight: 600;
+  color: var(--gold-light);
+}
+
+.panel-desc { margin-top: 8px; color: var(--text-dim); font-size: 0.95rem; }
+.panel-desc strong { color: var(--gold-light); }
+
+/* ---------- 고민 입력 ---------- */
+.field { position: relative; margin-top: 24px; }
+
+textarea,
+input[type="password"],
+input[type="text"] {
+  width: 100%;
+  font: inherit;
+  color: var(--text);
+  background: rgba(7, 6, 26, 0.6);
+  border: 1px solid rgba(169, 139, 234, 0.4);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  transition: border-color 0.25s, box-shadow 0.25s;
+}
+
+textarea { resize: vertical; min-height: 120px; padding-bottom: 28px; line-height: 1.6; }
+
+textarea:focus,
+input:focus {
+  outline: none;
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(217, 180, 106, 0.18);
+}
+
+textarea::placeholder,
+input::placeholder { color: rgba(180, 171, 214, 0.55); }
+
+.counter {
+  position: absolute;
+  right: 14px;
+  bottom: 10px;
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+
+.examples {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin: 14px 0 28px;
+}
+
+.chip {
+  font-size: 0.8rem;
+  padding: 6px 12px;
+  border-radius: 999px;
+  color: var(--purple-300);
+  background: rgba(91, 58, 158, 0.2);
+  border: 1px solid rgba(169, 139, 234, 0.35);
+  transition: background 0.2s, color 0.2s;
+}
+.chip:hover { background: rgba(91, 58, 158, 0.45); color: var(--gold-light); }
+
+/* ---------- 버튼 ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 200px;
+  padding: 14px 30px;
+  border-radius: 999px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  transition: transform 0.2s, box-shadow 0.25s, opacity 0.25s;
+}
+
+.btn-gold {
+  color: #2a1a05;
+  background: linear-gradient(180deg, var(--gold-light), var(--gold) 55%, var(--gold-deep));
+  box-shadow: 0 0 0 1px rgba(255, 240, 200, 0.5) inset, 0 8px 24px rgba(217, 180, 106, 0.3);
+}
+.btn-gold:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 0 0 1px rgba(255, 240, 200, 0.6) inset, 0 10px 32px rgba(217, 180, 106, 0.5);
+}
+.btn-gold:disabled { opacity: 0.35; cursor: not-allowed; }
+.btn-gold.ready { animation: readyGlow 1.8s ease-in-out infinite; }
+
+@keyframes readyGlow {
+  50% { box-shadow: 0 0 0 1px rgba(255, 240, 200, 0.6) inset, 0 0 36px rgba(243, 223, 166, 0.75); }
+}
+
+.btn-ghost {
+  color: var(--gold-light);
+  border: 1px solid rgba(217, 180, 106, 0.6);
+  background: rgba(20, 18, 58, 0.6);
+}
+.btn-ghost:hover { background: rgba(91, 58, 158, 0.35); }
+
+.link-btn {
+  margin-top: 14px;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.link-btn:hover { color: var(--gold-light); }
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 30px;
+}
+
+:focus-visible { outline: 2px solid var(--gold-light); outline-offset: 3px; }
+
+/* ---------- 카드 뒷면 ---------- */
+.card-back {
+  border-radius: 8px;
+  border: 2px solid var(--gold);
+  background:
+    radial-gradient(circle at 50% 50%, rgba(217, 180, 106, 0.28) 0 14%, transparent 15%),
+    repeating-linear-gradient(45deg, rgba(217, 180, 106, 0.13) 0 2px, transparent 2px 10px),
+    repeating-linear-gradient(-45deg, rgba(217, 180, 106, 0.13) 0 2px, transparent 2px 10px),
+    linear-gradient(160deg, var(--purple-700), var(--navy-700) 60%, var(--navy-900));
+  box-shadow: inset 0 0 0 3px var(--navy-800), inset 0 0 0 4px rgba(217, 180, 106, 0.6),
+    0 6px 16px rgba(0, 0, 0, 0.45);
+  display: grid;
+  place-items: center;
+  container-type: inline-size;
+  transition: box-shadow 0.3s;
+}
+
+.card-back::after {
+  content: "☾";
+  font-size: 40cqw;
+  color: var(--gold-light);
+  text-shadow: 0 0 10px rgba(243, 223, 166, 0.7);
+}
+
+/* ---------- STEP 2: 덱 (모바일: 2줄 그리드) ---------- */
+.deck {
+  display: grid;
+  grid-template-columns: repeat(11, 1fr);
+  gap: 5px;
+  max-width: 640px;
+  margin: 10px auto 0;
+}
+
+.deck-card {
+  position: relative;
+  aspect-ratio: 7 / 12; /* 카드 이미지 350×600 비율 */
+  animation: dealIn 0.5s cubic-bezier(0.2, 0.8, 0.3, 1.2) both;
+  animation-delay: var(--delay, 0s);
+  transition: transform 0.3s ease, opacity 0.4s ease;
+}
+.deck-card .card-back { position: absolute; inset: 0; border-radius: 5px; border-width: 1px; }
+
+@keyframes dealIn {
+  from { opacity: 0; transform: translateY(-40px) scale(0.6); }
+  to { opacity: 1; transform: none; }
+}
+
+.deck-card.lifting { transform: translateY(-16px); z-index: 3; }
+.deck-card.lifting .card-back { box-shadow: 0 0 18px rgba(243, 223, 166, 0.8); }
+.deck-card.taken { opacity: 0; pointer-events: none; }
+.deck.locked .deck-card { pointer-events: none; }
+.deck.locked .deck-card:not(.taken) { opacity: 0.45; }
+
+/* ---------- 데스크톱: 부채꼴 ---------- */
+@media (min-width: 768px) {
+  .deck {
+    display: block;
+    position: relative;
+    max-width: none;
+    height: 350px;
+    margin-top: 0;
+  }
+
+  .deck-card {
+    position: absolute;
+    left: calc(50% - var(--fan-w) / 2);
+    top: 40px;
+    width: var(--fan-w);
+    transform-origin: 50% 300%;
+    transform: rotate(var(--angle, 0deg));
+    animation: none;
+    transition: transform 0.7s cubic-bezier(0.2, 0.8, 0.25, 1), opacity 0.4s ease;
+    transition-delay: var(--delay, 0s);
+  }
+  .deck-card .card-back { border-radius: 8px; border-width: 2px; }
+
+  .deck-card:not(.taken):hover {
+    transform: rotate(var(--angle)) translateY(-18px);
+    transition-delay: 0s;
+  }
+  .deck-card:hover .card-back { box-shadow: 0 0 18px rgba(217, 180, 106, 0.7); }
+
+  .deck-card.lifting {
+    transform: rotate(var(--angle)) translateY(-40px);
+    transition-delay: 0s;
+  }
+}
+
+/* ---------- 슬롯 ---------- */
+.slots {
+  display: flex;
+  justify-content: center;
+  gap: clamp(14px, 4vw, 36px);
+  margin-top: 26px;
+}
+
+.slot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.slot-card {
+  position: relative;
+  width: var(--slot-w);
+  aspect-ratio: 7 / 12; /* 카드 이미지 350×600 비율 */
+  border-radius: 10px;
+  border: 1.5px dashed rgba(217, 180, 106, 0.5);
+  background: rgba(11, 10, 36, 0.45);
+}
+
+.slot-card .card-back {
+  position: absolute;
+  inset: 0;
+  animation: settle 0.5s cubic-bezier(0.2, 0.8, 0.3, 1.2) both;
+}
+
+@keyframes settle {
+  from { opacity: 0; transform: translateY(-50px) scale(0.8) rotate(-6deg); }
+  to { opacity: 1; transform: none; }
+}
+
+.slot.filled .slot-card { border-style: solid; border-color: transparent; }
+.slot-label { font-size: 0.85rem; color: var(--gold); letter-spacing: 0.15em; }
+
+/* ---------- STEP 3: 공개 카드 ---------- */
+.spread {
+  display: flex;
+  justify-content: center;
+  gap: clamp(10px, 3.5vw, 40px);
+}
+
+.spread-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.position-label {
+  font-family: var(--font-title);
+  font-size: clamp(0.78rem, 2.6vw, 0.95rem);
+  color: var(--gold);
+  letter-spacing: 0.2em;
+}
+
+.tarot-card {
+  position: relative;
+  width: var(--card-w);
+  aspect-ratio: 7 / 12; /* 카드 이미지 350×600 비율 */
+  perspective: 1200px;
+  animation: dealIn 0.6s ease both;
+  animation-delay: var(--delay, 0s);
+}
+
+.card-inner {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transition: transform 1s cubic-bezier(0.4, 0.15, 0.2, 1);
+}
+.tarot-card.flipped .card-inner { transform: rotateY(180deg); }
+
+.card-face {
+  position: absolute;
+  inset: 0;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  border-radius: var(--radius);
+}
+
+.card-orient {
+  font-size: 0.78rem;
+  padding: 1px 10px;
+  border-radius: 999px;
+  border: 1px solid currentColor;
+  opacity: 0;
+  transition: opacity 0.4s 0.6s;
+}
+.flipped + .card-orient { opacity: 1; }
+.card-orient.up { color: #9fe3c4; }
+.card-orient.rev { color: #f3a6c4; }
+.card-cname { font-size: clamp(0.8rem, 2.6vw, 0.95rem); color: var(--gold-light); opacity: 0; transition: opacity 0.4s 0.6s; }
+.flipped ~ .card-cname { opacity: 1; }
+
+/* ---------- 카드 앞면 일러스트 ---------- */
+.card-front {
+  transform: rotateY(180deg);
+  container-type: inline-size;
+  overflow: hidden;
+  padding: 6cqw;
+  background:
+    radial-gradient(circle at 50% 42%, var(--glow, rgba(243, 223, 166, 0.35)), transparent 55%),
+    linear-gradient(170deg, var(--c1, #3a2470), var(--c2, #120f33));
+  border: 2px solid var(--gold);
+  box-shadow: 0 0 26px rgba(217, 180, 106, 0.4), 0 12px 30px rgba(0, 0, 0, 0.55);
+}
+
+/* 역방향: 앞면 전체를 180도 회전 */
+.tarot-card.reversed .card-front { transform: rotateY(180deg) rotateZ(180deg); }
+
+/* 실제 카드 이미지가 있을 때: 금색 테두리 안에 이미지를 꽉 채움 */
+.card-front.has-image {
+  padding: 0;
+  background: var(--navy-800);
+  border: 2px solid var(--gold);
+  box-shadow: inset 0 0 0 1px rgba(7, 6, 26, 0.6), 0 0 26px rgba(217, 180, 106, 0.4),
+    0 12px 30px rgba(0, 0, 0, 0.55);
+}
+
+.front-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: calc(var(--radius) - 2px);
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* 카드가 뒤집힌 뒤 은은한 금빛 광택이 한 번 지나감 */
+.card-front.has-image::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(115deg, transparent 35%, rgba(255, 240, 200, 0.35) 50%, transparent 65%);
+  background-size: 250% 100%;
+  background-position: 120% 0;
+  pointer-events: none;
+}
+.tarot-card.flipped .card-front.has-image::after { animation: sheen 1.4s ease 0.9s both; }
+
+@keyframes sheen { to { background-position: -120% 0; } }
+
+.front-frame {
+  position: relative;
+  height: 100%;
+  border: 1px solid rgba(243, 223, 166, 0.75);
+  border-radius: 6cqw;
+  box-shadow: inset 0 0 0 3cqw rgba(7, 6, 26, 0.25), inset 0 0 0 calc(3cqw + 1px) rgba(243, 223, 166, 0.45);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7cqw 4cqw 6cqw;
+}
+
+.corner { position: absolute; font-size: 7cqw; color: var(--gold-light); line-height: 1; }
+.corner.tl { top: 2cqw; left: 3cqw; }
+.corner.tr { top: 2cqw; right: 3cqw; }
+.corner.bl { bottom: 2cqw; left: 3cqw; }
+.corner.br { bottom: 2cqw; right: 3cqw; }
+
+.front-numeral {
+  font-family: var(--font-title);
+  font-weight: 700;
+  font-size: 10cqw;
+  color: var(--gold-light);
+  letter-spacing: 0.08em;
+  text-shadow: 0 0 6px rgba(243, 223, 166, 0.5);
+}
+
+.front-art {
+  position: relative;
+  width: 70cqw;
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+}
+
+.front-art::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(243, 223, 166, 0.7);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.12), transparent 70%);
+  box-shadow: 0 0 0 3cqw rgba(243, 223, 166, 0.08), 0 0 0 calc(3cqw + 1px) rgba(243, 223, 166, 0.35);
+}
+
+.front-art::after {
+  content: "✦ · ✧ · ✦ · ✧ · ✦ · ✧ ·";
+  position: absolute;
+  inset: -6cqw;
+  display: grid;
+  place-items: start center;
+  font-size: 5cqw;
+  color: rgba(243, 223, 166, 0.55);
+  animation: spin 24s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.front-symbol {
+  position: relative;
+  font-size: 32cqw;
+  line-height: 1;
+  filter: drop-shadow(0 0 8px var(--glow, rgba(243, 223, 166, 0.6)));
+}
+
+.front-name { text-align: center; line-height: 1.25; }
+.front-name .ko { display: block; font-weight: 700; font-size: 10cqw; color: var(--gold-light); }
+.front-name .en {
+  display: block;
+  font-family: var(--font-title);
+  font-size: 5.6cqw;
+  letter-spacing: 0.12em;
+  color: rgba(236, 230, 255, 0.75);
+  text-transform: uppercase;
+}
+
+/* ---------- STEP 4: 리딩 ---------- */
+.reading {
+  max-width: 780px;
+  margin: 36px auto 0;
+  padding: clamp(20px, 4.5vw, 36px);
+  animation: fadeUp 0.6s ease both;
+}
+
+.reading-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid rgba(217, 180, 106, 0.3);
+}
+.reading-header h3 { color: var(--gold-light); font-size: 1.15rem; }
+
+.reading-notice {
+  font-size: 0.85rem;
+  color: #f3c6a6;
+  background: rgba(243, 166, 120, 0.1);
+  border: 1px solid rgba(243, 166, 120, 0.35);
+  border-radius: 10px;
+  padding: 8px 12px;
+  margin-bottom: 14px;
+}
+
+.reading-body { font-size: 0.98rem; word-break: keep-all; overflow-wrap: anywhere; }
+.reading-body h3 {
+  margin: 22px 0 8px;
+  font-size: 1.08rem;
+  color: var(--gold-light);
+}
+.reading-body h3:first-child { margin-top: 0; }
+.reading-body h4 { margin: 14px 0 4px; font-size: 0.98rem; color: var(--gold); }
+.reading-body p { margin: 6px 0; }
+.reading-body ul { margin: 6px 0 6px 1.2em; }
+.reading-body li { margin: 4px 0; }
+.reading-body strong { color: var(--gold-light); }
+
+.loading {
+  color: var(--text-dim);
+  font-style: italic;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+@keyframes pulse { 50% { opacity: 0.4; } }
+
+.cursor {
+  display: inline-block;
+  width: 0.55em;
+  height: 1.05em;
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  background: var(--gold-light);
+  animation: blink 0.9s steps(1) infinite;
+}
+@keyframes blink { 50% { opacity: 0; } }
+
+/* ---------- 설정 모달 ---------- */
+.modal {
+  margin: auto;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  width: min(460px, calc(100% - 32px));
+  max-width: none;
+}
+.modal::backdrop { background: rgba(5, 4, 18, 0.7); backdrop-filter: blur(4px); }
+.modal[open] { animation: fadeUp 0.35s ease both; }
+
+.modal-inner { padding: 28px 24px 24px; }
+
+.label { display: block; margin-top: 18px; margin-bottom: 6px; font-size: 0.85rem; color: var(--gold); }
+
+.key-row { display: flex; gap: 8px; }
+.key-row input { flex: 1; min-width: 0; }
+.key-row .icon-btn { width: 46px; height: auto; border-radius: var(--radius); flex-shrink: 0; }
+
+.modal-hint { margin-top: 10px; font-size: 0.78rem; color: var(--text-dim); }
+.modal-hint a { color: var(--gold-light); }
+
+.modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+.modal-actions .btn { flex: 1; min-width: 0; padding: 12px 16px; }
+
+.modal-close {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  font-size: 1rem;
+  color: var(--text-dim);
+}
+.modal-close:hover { color: var(--gold-light); }
+
+/* ---------- 반응형 보정 ---------- */
+@media (max-width: 420px) {
+  .btn { min-width: 0; width: 100%; }
+  .panel::before, .panel::after { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0s !important;
+  }
+}

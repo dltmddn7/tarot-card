@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="당신의 고민을 세 장의 타로 카드와 AI 타로 마스터가 이야기로 풀어주는 심야 타로 리딩." />
+  <meta name="theme-color" content="#0b0a24" />
+  <title>심야 타로 리딩</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Noto+Serif+KR:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- 밤하늘 배경 -->
+  <div class="sky" aria-hidden="true">
+    <div class="stars" id="stars"></div>
+    <div class="moon-glow"></div>
+  </div>
+
+  <!-- 상단 바: 모드 표시 + 설정 -->
+  <div class="topbar">
+    <span class="mode-chip" id="mode-chip">데모 모드</span>
+    <button type="button" class="icon-btn" id="btn-settings" aria-label="Gemini API 키 설정">
+      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+        <path fill="currentColor" d="M19.14 12.94a7.07 7.07 0 0 0 0-1.88l2.03-1.58a.5.5 0 0 0 .12-.64l-1.92-3.32a.5.5 0 0 0-.6-.22l-2.39.96a7.03 7.03 0 0 0-1.63-.94l-.36-2.54A.5.5 0 0 0 13.9 2h-3.8a.5.5 0 0 0-.49.42l-.36 2.54c-.59.24-1.13.56-1.63.94l-2.39-.96a.5.5 0 0 0-.6.22L2.71 8.48a.5.5 0 0 0 .12.64l2.03 1.58a7.07 7.07 0 0 0 0 1.88l-2.03 1.58a.5.5 0 0 0-.12.64l1.92 3.32c.13.22.39.3.6.22l2.39-.96c.5.38 1.04.7 1.63.94l.36 2.54c.04.24.25.42.49.42h3.8c.24 0 .45-.18.49-.42l.36-2.54c.59-.24 1.13-.56 1.63-.94l2.39.96c.22.08.47 0 .6-.22l1.92-3.32a.5.5 0 0 0-.12-.64l-2.03-1.58ZM12 15.5A3.5 3.5 0 1 1 12 8.5a3.5 3.5 0 0 1 0 7Z"/>
+      </svg>
+    </button>
+  </div>
+
+  <main class="app">
+    <header class="site-header">
+      <p class="eyebrow">✦ Midnight Tarot ✦</p>
+      <h1 class="title">신비로운 심야 타로 리딩</h1>
+    </header>
+
+    <!-- STEP 1. 고민 입력 -->
+    <section class="screen is-active" id="screen-ask" aria-labelledby="ask-title">
+      <div class="panel">
+        <h2 class="panel-title" id="ask-title">오늘 밤, 어떤 고민을 품고 오셨나요?</h2>
+        <p class="panel-desc">지금 가장 궁금한 일을 편하게 적어주세요. 구체적일수록 카드가 더 또렷하게 답해요.</p>
+
+        <div class="field">
+          <textarea id="concern" rows="4" maxlength="300"
+            placeholder="예) 곧 다가오는 은행 면접 결과가 어떨지 궁금해요"></textarea>
+          <span class="counter"><span id="concern-count">0</span> / 300</span>
+        </div>
+
+        <div class="examples" aria-label="고민 예시">
+          <button type="button" class="chip">곧 다가오는 은행 면접 결과가 어떨지 궁금해요</button>
+          <button type="button" class="chip">지금 썸타는 사람과의 관계 발전 가능성</button>
+          <button type="button" class="chip">올해 안에 목돈을 모을 수 있을까요?</button>
+          <button type="button" class="chip">요즘 지친 나에게 필요한 메시지</button>
+        </div>
+
+        <button type="button" class="btn btn-gold" id="btn-spread" disabled>✧ 카드 펼치기 ✧</button>
+      </div>
+    </section>
+
+    <!-- STEP 2. 카드 선택 -->
+    <section class="screen" id="screen-pick" aria-labelledby="pick-title">
+      <div class="screen-head">
+        <h2 class="panel-title" id="pick-title">직감이 이끄는 카드 세 장을 골라주세요</h2>
+        <p class="panel-desc concern-echo" id="pick-concern"></p>
+      </div>
+
+      <div class="deck" id="deck" aria-label="타로 카드 22장"></div>
+
+      <div class="slots" id="slots">
+        <div class="slot"><div class="slot-card"></div><span class="slot-label">과거</span></div>
+        <div class="slot"><div class="slot-card"></div><span class="slot-label">현재</span></div>
+        <div class="slot"><div class="slot-card"></div><span class="slot-label">미래</span></div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="btn btn-gold" id="btn-confirm" disabled>
+          운명의 카드 확인하기 (<span id="pick-count">0</span>/3)
+        </button>
+      </div>
+    </section>
+
+    <!-- STEP 3·4. 카드 공개 + 리딩 -->
+    <section class="screen" id="screen-result" aria-labelledby="result-title">
+      <div class="screen-head">
+        <h2 class="panel-title" id="result-title">운명의 카드가 펼쳐집니다</h2>
+        <p class="panel-desc concern-echo" id="result-concern"></p>
+      </div>
+
+      <div class="spread" id="spread"></div>
+
+      <article class="reading" id="reading" hidden>
+        <header class="reading-header">
+          <h3>☾ 타로 마스터의 리딩</h3>
+          <span class="mode-chip small" id="reading-mode"></span>
+        </header>
+        <p class="reading-notice" id="reading-notice" hidden></p>
+        <div class="reading-body" id="reading-body" aria-live="polite"></div>
+        <button type="button" class="link-btn" id="btn-skip" hidden>타이핑 건너뛰기 ≫</button>
+      </article>
+
+      <div class="actions">
+        <button type="button" class="btn btn-ghost" id="btn-reset">↺ 다시 뽑기</button>
+      </div>
+    </section>
+
+    <footer class="site-footer">
+      <p>타로는 답을 정해주지 않아요. 당신 안의 답을 비춰줄 뿐 ☾</p>
+    </footer>
+  </main>
+
+  <!-- 설정 모달 -->
+  <dialog class="modal" id="settings">
+    <form method="dialog" class="modal-inner" id="settings-form">
+      <h2 class="panel-title">⚙ Gemini API 설정</h2>
+      <p class="panel-desc">
+        본인의 Gemini API 키를 입력하면 <strong>gemini-2.5-flash</strong>가 고민에 맞춘 리딩을 들려줘요.
+        키가 비어 있으면 내장된 해석으로 동작하는 <strong>데모 모드</strong>로 진행됩니다.
+      </p>
+      <label class="label" for="api-key">API 키</label>
+      <div class="key-row">
+        <input type="password" id="api-key" autocomplete="off" spellcheck="false" placeholder="AIza..." />
+        <button type="button" class="icon-btn" id="btn-toggle-key" aria-label="키 보기/숨기기">👁</button>
+      </div>
+      <p class="modal-hint">
+        키는 이 브라우저의 localStorage에만 저장되고, Google API로 직접 요청할 때만 쓰여요.
+        공용 PC에서는 사용 후 꼭 삭제해 주세요.
+        <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">API 키 발급받기 ↗</a>
+      </p>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" id="btn-clear-key">키 삭제</button>
+        <button type="submit" class="btn btn-gold" id="btn-save-key" value="save">저장</button>
+      </div>
+      <button type="button" class="modal-close" id="btn-close-settings" aria-label="닫기">✕</button>
+    </form>
+  </dialog>
+
+  <script src="script.js"></script>
+</body>
+</html>
